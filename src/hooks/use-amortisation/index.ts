@@ -1,0 +1,1 @@
+export { useAmortisation } from "./useAmortisation";

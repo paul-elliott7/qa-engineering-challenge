@@ -1,0 +1,1 @@
+export { LoanRepaymentDetails } from "./LoanRepaymentDetails";
