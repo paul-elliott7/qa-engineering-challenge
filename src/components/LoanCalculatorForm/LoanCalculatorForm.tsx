@@ -17,12 +17,12 @@ type LoanCalculatorFormValues = {
   loanTerm: number;
   interestRate: number;
 };
-
+/**
 const defaultValues = {
   loanAmount: 30000,
   loanTerm: 12,
   interestRate: 7.5,
-};
+}; */ const defaultValues = {};
 
 type LoanCalculatorFormProps = {
   onSubmit(formData: LoanCalculatorFormValues): void;
