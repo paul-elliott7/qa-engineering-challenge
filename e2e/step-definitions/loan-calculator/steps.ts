@@ -2,7 +2,7 @@ import { Then, When } from "@wdio/cucumber-framework";
 import { it } from "mocha";
 import LoanAmortiserPage from "../../pages/loan-amortiser";
 
-// Smoke test
+// Smoke test as per orginal challenge
 
 When(/^the user accesses the Loan Amortiser$/, async () => {
   await LoanAmortiserPage.open();
@@ -25,7 +25,7 @@ Then(
   }
 );
 
-// Field validation tests
+// Missing field input validation tests using clearValue()
 
 Then(/^trap missing value errors$/, async (dataTable) => {
   const data = dataTable.hashes()[0];
@@ -46,6 +46,12 @@ Then(/^trap missing value errors$/, async (dataTable) => {
   expect(errorMsg).toEqual(data["Expected msg Interest Rate"]);
 
 });
+
+// Invalid field input validation tests using setValue().
+// I have had to remove the default values in LoanCalculatorForm.tsx as a workround simply to enable
+// me to proceed with the challenge as setValue() kept appending my inputs to these.  There must be a solution
+// for this issue but all the chat forums recognise this as a genuine WebdriverIO issue.  I have tried changing
+// the browser version of Chrome in wdio.conf.ts but still no joy.
 
 Then(/^enter invalid values and trap errors$/, async (dataTable) => {
   const data = dataTable.hashes()[0];
@@ -70,17 +76,34 @@ Then(/^enter invalid values and trap errors$/, async (dataTable) => {
 
 });
 
+// I put this in as an attempt to reset the input values after error validation but in the end
+// have not used it due to problems with values re-appearing.  Have kept it in for reference only.
 When(/^user resets values$/, async () => {
   await LoanAmortiserPage.calculateButton.click();
   await $('button=Reset').click();
   await LoanAmortiserPage.calculateButton.waitForDisplayed();
 });
 
+// Validation of calculated values
+
 Then(/^enter valid values and check that the calculations are as expected$/, async (dataTable) => {
   var data = dataTable.hashes()[0];
  
-  let j=0;
+  let j=0; // This is the index for the data-table in loan-amortiser-feature.  Simply adding more rows
+           // there will cause the code to iterate, until the last empty row which acts as EOF marker.
   do {
+
+    // First up we'll validate the 3 calculated values of :
+    // - Monthly Repayment Amount
+    // - Total Interest Payable
+    // - Total Amount Repayable
+    // I could do this using on-the-fly calculations but, just to illustrate a method, for this I've
+    // preloaded expected results in each row of the data data-table using results obtained from the excel
+    // LoanAmortiser.xlsx spreadsheet which I put together (and which I've pushed to GitHub too).
+    // using the sheet also gets round the (presumably deliberate) formatting issue of the missing £ sign
+    // and commas in the Total Amount Repayable value.  You'll see from the feature file that for these
+    // I've entered the expected value without such formatting.  Test will fail (correctly) if properly
+    // formatted GBP Currency formats are expected.
 
     const loanAmount = data["Loan Amount"];
     const loanTerm = data["Loan Term"];
@@ -105,6 +128,21 @@ Then(/^enter valid values and check that the calculations are as expected$/, asy
     );
 
     console.log(`\nMonthly Payment Amount ${monthlyPayment} | Total Interest Repayable ${totalInterest} | Total Amount Repayable ${totalAmount}`);
+
+    // Now we'll validate the calculated data in each row of the schedule table.  For this I'm using a different
+    // method, basically a loop through all all rows and comparing what's on screen with a calculated expected
+    // value.  (Not using the spreadsheet method for this one).
+    // Several anomalies here which I've solved or worked round :
+    // - The first 2 cols of the first 3 rows of the schedule table use different selectors than the rest.
+    //   Hence the slightly different selectors used when k<=3
+    // - I'm using a currency formatter to convert the expect calculated values to the same format as what's
+    //   on screen i.e. 2 dp. £ signs and commas.  I did orginally try a 'replace' string pattern but that
+    //   struggled with negative values such as -£0.00 which can happen in the Loan Amortiser app.  The regex
+    //   format was yielding £-0.00 which causes an incorrect failue.
+    // - The tests reveal an error for terms other than 12.  I believe that as per the Readme file the period
+    //   interest rate should be based on i / 100 / 12 but it's actually dividing by the 'loan term' and
+    //   not 12.  So it works when the loan term is 12 but is incorrect for anything else.  The test will
+    //   correctly fail for such input values.  
 
     const P = loanAmount;
     const n = loanTerm;
