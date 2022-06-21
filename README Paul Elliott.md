@@ -33,12 +33,12 @@ Secondly, for the schedule table I'm using a different method, basically a loop 
 
 Several anomalies here which I've spotted and dealt with :
 - The first 2 cols of the first 3 rows of the schedule table use different selectors than the rest.  Hence the slightly different selectors used when `k<=3`.
-- I'm using a currency formatter to convert the expect calculated values to the same format as what's on screen i.e. 2 dp. £ signs and commas.  I did orginally try a 'replace' regex string pattern but that struggled with negative values such as `-£0.00` which can happen in the Loan Amortiser app.  The regex format was yielding `£-0.00` which causes a mismatch.
-- The tests reveal an error for terms other than 12.  I believe that as per the Readme file the periodic interest rate should be based on `i / 100 / 12` but it's actually dividing by the 'loan term' rather than 12.  So it works when the loan term is 12 but is incorrect for anything else.  The test will correctly fail for such input values.  I've left one row in the table which demonstrates this i.e. will cause a test failure.  There are 2 others I've left in which you can try if you wish but these are after the blank data table row so are parked for now.  Simply edit the data table for this scenario to try out different rows as required.
+- I'm using a currency formatter to convert the expected calculated values to the same format as what's on screen i.e. numbers to 2 dp, £ signs and commas for thousands separators.  I did orginally try a 'replace' regex string pattern but that struggled with negative values such as `-£0.00` which can happen in the Loan Amortiser app.  The regex format was yielding `£-0.00` which causes a mismatch.
+- The tests reveal an error for terms other than 12.  I believe that as per the Readme file the periodic interest rate should be based on `i / 100 / 12` but instead of 12 the code is actually dividing by the 'loan term'.  So it works when the loan term is 12 but is incorrect for anything else.  The test will correctly fail for such input values.  I've left one row in the table which demonstrates this i.e. will cause a test failure.  There are 2 others I've left in which you can try if you wish but these are after the blank data table row so are parked for now.  Simply edit the data table for this scenario to try out different rows as required.
     
 ## And finally...
 
-This is my first experience of WebdriverIO (although I have used CypressIO before) and so I have been learning as I go.  I'm sure there are neater ways of presenting the code, by declaring functions for example so that the code reads neater, but for now I've put code inline for this my first challenge.
+This is my first experience of WebdriverIO (although I have used CypressIO before) and so I have been learning as I go.  I'm sure there are neater ways of presenting the code, by declaring functions for example so that the code reads cleaner, but for now I've put code inline for this my first challenge.
 
 I've also used lots of console.log() statements to aid my debugging; I've left these in so that you can see my workings.
 
