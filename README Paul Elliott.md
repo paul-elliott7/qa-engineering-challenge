@@ -2,7 +2,7 @@
 
 When running the tests using `npm run e2e` the test steps will run using data in tables in the loan-amortiser.feature file.
 
-For Acceptance Criteria please see the Word doc [Behaviours and Validation](Behaviours%20and%20validation.docx) which I've included in the repository.
+For Acceptance Criteria please see the Word doc [Acceptance Criteria](Acceptance%20Criteria.docx) which I've included in the repository.
 
 Note that I just could not get setValue() to work as it kept appending values to the default values, even after using clearValue().  Regrettably I've had to remove the default values from LoanCalculatorForm.tsx just so that I can proceed with the rest of this challenge.
 
@@ -28,10 +28,9 @@ I could do this using on-the-fly calculations but, just to illustrate a method, 
 For the schedule table I'm using a different method, basically a loop through all all rows and comparing what's on screen with expected values calculated on the fly.
 
 Several anomalies here which I've solved or worked round :
-
-    - The first 2 cols of the first 3 rows of the schedule table use different selectors than the rest.  Hence the slightly different selectors used when k<=3
-    - I'm using a currency formatter to convert the expect calculated values to the same format as what's on screen i.e. 2 dp. £ signs and commas.  I did orginally try a 'replace' regex string pattern but that struggled with negative values such as -£0.00 which can happen in the Loan Amortiser app.  The regex format was yielding £-0.00 which causes a mismatch.
-    - The tests reveal an error for terms other than 12.  I believe that as per the Readme file the periodic interest rate should be based on 'i / 100 / 12` but it's actually dividing by the 'loan term' rather than 12.  So it works when the loan term is 12 but is incorrect for anything else.  The test will correctly fail for such input values.
+- The first 2 cols of the first 3 rows of the schedule table use different selectors than the rest.  Hence the slightly different selectors used when k<=3
+- I'm using a currency formatter to convert the expect calculated values to the same format as what's on screen i.e. 2 dp. £ signs and commas.  I did orginally try a 'replace' regex string pattern but that struggled with negative values such as -£0.00 which can happen in the Loan Amortiser app.  The regex format was yielding £-0.00 which causes a mismatch.
+- The tests reveal an error for terms other than 12.  I believe that as per the Readme file the periodic interest rate should be based on 'i / 100 / 12` but it's actually dividing by the 'loan term' rather than 12.  So it works when the loan term is 12 but is incorrect for anything else.  The test will correctly fail for such input values.
 
 I've left one row in the table which demonstrates this i.e. will cause a test failure.  There are 2 others I've left in which you can try if you wish but these are after the blank data table row so are parked for now.  Simply edit the data table for this scenario to try out different rows as required.
     
